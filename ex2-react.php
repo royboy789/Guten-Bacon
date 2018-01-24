@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     Learn Gutenberg Example 2: React
+ * Plugin Name:     Guten Bacon
  * Plugin URI:      PLUGIN SITE HERE
  * Description:     PLUGIN DESCRIPTION HERE
  * Author:          YOUR NAME HERE

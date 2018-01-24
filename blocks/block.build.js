@@ -94,6 +94,11 @@ registerBlockType('blocks/guten-bacon', {
             attribute: 'paras',
             default: '2'
         },
+        start_with: {
+            selector: 'div#bacon-wrapper',
+            attribute: 'start-with',
+            default: 'false'
+        },
         content: {
             selector: 'div#bacon-wrapper p',
             default: '<p>Select Options</p>'
@@ -108,17 +113,21 @@ registerBlockType('blocks/guten-bacon', {
 
 
         var getBacon = function getBacon() {
-            var url = 'https://baconipsum.com/api/?type=' + attributes.type + '&paras=' + attributes.paras + '&start-with-lorem=1';
+            var url = 'https://baconipsum.com/api/?type=' + attributes.type + '&paras=' + attributes.paras;
+            console.log(attributes);
+            if ('false' !== attributes.start_with) {
+                url += '&start-with-lorem=1';
+            }
             jQuery.get(url).done(function (res) {
                 setAttributes({ content: res });
             });
         };
 
         var changeHandler = function changeHandler(event) {
-            getBacon();
             var newAttr = {};
             newAttr[event.target.id] = event.target.value;
             setAttributes(newAttr);
+            getBacon();
         };
 
         var typeOptions = [{
@@ -129,9 +138,24 @@ registerBlockType('blocks/guten-bacon', {
             label: 'All Meat'
         }];
 
+        var startWithOptions = [{
+            value: 'true',
+            label: 'Yes'
+        }, {
+            value: 'false',
+            label: 'No'
+        }];
+
         return wp.element.createElement(
             'div',
             { id: id },
+            wp.element.createElement(__WEBPACK_IMPORTED_MODULE_1__components_Select_React__["a" /* default */], {
+                id: 'start_with',
+                changeCallback: changeHandler,
+                value: attributes.start_with,
+                options: startWithOptions,
+                label: 'Start With Bacon Ipsum...?'
+            }),
             wp.element.createElement(__WEBPACK_IMPORTED_MODULE_1__components_Select_React__["a" /* default */], {
                 id: 'type',
                 changeCallback: changeHandler,
@@ -153,10 +177,9 @@ registerBlockType('blocks/guten-bacon', {
     save: function save(_ref2) {
         var attributes = _ref2.attributes;
 
-        console.log(attributes);
         return wp.element.createElement(
             'div',
-            { className: attributes.className, id: 'bacon-wrapper', type: attributes.type, paras: attributes.paras },
+            { type: attributes.type, paras: attributes.paras, 'start-with': attributes.start_with, className: attributes.className, id: 'bacon-wrapper' },
             attributes.content.map(function (item, index) {
                 return wp.element.createElement(
                     'p',

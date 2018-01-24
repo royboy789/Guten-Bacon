@@ -20,6 +20,11 @@ registerBlockType( 'blocks/guten-bacon', {
             attribute: 'paras',
             default: '2'
         },
+        start_with: {
+            selector: 'div#bacon-wrapper',
+            attribute: 'start-with',
+            default: 'false'
+        },
         content: {
             selector: 'div#bacon-wrapper p',
             default: '<p>Select Options</p>'
@@ -28,17 +33,21 @@ registerBlockType( 'blocks/guten-bacon', {
     edit({attributes, setAttributes, className, focus, id}) {
 
         const getBacon = () => {
-            let url = 'https://baconipsum.com/api/?type=' + attributes.type + '&paras=' + attributes.paras + '&start-with-lorem=1';
+            let url = 'https://baconipsum.com/api/?type=' + attributes.type + '&paras=' + attributes.paras;
+            console.log( attributes );
+            if ( 'false' !== attributes.start_with ) {
+                url += '&start-with-lorem=1';
+            }
             jQuery.get( url ).done((res) => {
                setAttributes({content: res})
             });
         };
 
         const changeHandler = ( event ) => {
-            getBacon();
             let newAttr = {};
             newAttr[event.target.id] = event.target.value;
             setAttributes( newAttr );
+            getBacon();
         };
 
         const typeOptions = [
@@ -52,10 +61,28 @@ registerBlockType( 'blocks/guten-bacon', {
             }
         ];
 
+        const startWithOptions = [
+            {
+                value: 'true',
+                label: 'Yes'
+            },
+            {
+                value: 'false',
+                label: 'No'
+            }
+        ];
+
 
 
         return (
             <div id={id}>
+                <Select
+                    id="start_with"
+                    changeCallback={changeHandler}
+                    value={attributes.start_with}
+                    options={startWithOptions}
+                    label="Start With Bacon Ipsum...?"
+                />
                 <Select
                     id="type"
                     changeCallback={changeHandler}
@@ -75,9 +102,8 @@ registerBlockType( 'blocks/guten-bacon', {
     },
 
     save: function({attributes}) {
-        console.log( attributes );
         return (
-            <div className={attributes.className} id="bacon-wrapper" type={attributes.type} paras={attributes.paras}>
+            <div type={attributes.type} paras={attributes.paras} start-with={attributes.start_with} className={attributes.className} id="bacon-wrapper">
                 {attributes.content.map((item, index) => {
                     return <p key={index}>{item}</p>
                 })}
